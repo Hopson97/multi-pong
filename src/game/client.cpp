@@ -7,6 +7,13 @@ Client::Client()
     sf::Packet packet;
     packet << CommandsToServer::Connect;
     send(packet);
+    {
+        sf::Packet packet;
+        sf::IpAddress address;
+        Port_t port;
+        if (m_socket.receive(packet, address, port) == sf::Socket::Done) {
+        }
+    }
 }
 
 void Client::run()

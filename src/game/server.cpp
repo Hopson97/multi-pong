@@ -26,15 +26,17 @@ void Server::run()
     }
 }
 
-void Server::sendTo(sf::Packet &packet, Client_t clientId) {
-    auto& client = getClient(clientId);
+void Server::sendTo(sf::Packet &packet, Client_t clientId)
+{
+    auto &client = getClient(clientId);
     m_socket.send(packet, client.address, client.port);
 }
 
-void Server::handleConnect(sf::Packet packet, sf::IpAddress address, Port_t port)
+void Server::handleConnect(const sf::Packet &packet,
+                           const sf::IpAddress &address, Port_t port)
 {
-    std::cout << "Client requesting connection from " << address.toString() << std::endl;    
     (void)packet;
-    (void)address;
-    (void)port;
+    std::cout << "Client requesting connection\n"
+              << "From IP: " << address.toString() << '\n'
+              << "From port: " << (int)port << std::endl;
 }

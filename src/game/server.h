@@ -19,13 +19,14 @@ class Server {
   private:
     void sendTo(sf::Packet &packet, Client_t client);
 
-    void handleConnect(sf::Packet packet, sf::IpAddress address, Port_t port);
-    
-    template<typename T>
-    ConnectedClient& getClient(T slot) {
+    void handleConnect(const sf::Packet &packet, const sf::IpAddress &address,
+                       Port_t port);
+
+    template <typename T> ConnectedClient &getClient(T slot)
+    {
         return m_clients[static_cast<size_t>(slot)];
     }
-    
+
     sf::UdpSocket m_socket;
 
     int connectedClients = 0;

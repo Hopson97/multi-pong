@@ -18,12 +18,14 @@ sf::Packet &operator>>(sf::Packet &packet, CommandsToClient &command)
 
 sf::Packet &operator<<(sf::Packet &packet, CommandsToServer command)
 {
-    packet << static_cast<Command_t>(command);;
+    packet << static_cast<Command_t>(command);
+    ;
     return packet;
 }
 
 sf::Packet &operator<<(sf::Packet &packet, CommandsToClient command)
 {
-    packet << static_cast<Command_t>(command);;
+    packet << static_cast<Command_t>(command);
+    ;
     return packet;
 }
