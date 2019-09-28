@@ -10,6 +10,7 @@ set(SOURCES
 
     src/game/client.cpp 
     src/game/server.cpp
+    src/game/net_commands.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
