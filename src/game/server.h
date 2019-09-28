@@ -3,6 +3,7 @@
 #include "net_commands.h"
 #include <SFML/Network.hpp>
 #include <array>
+#include <queue>
 
 struct ConnectedClient {
     sf::IpAddress address;

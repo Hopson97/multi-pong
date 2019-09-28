@@ -50,7 +50,7 @@ void Server::handleConnect(const sf::Packet &packet,
         client.port = port;
 
         sf::Packet packet;
-        packet << CommandsToClient::AcceptConnection;
+        packet << CommandsToClient::AcceptConnection << static_cast<Client_t>(slot);
         sendTo(packet, slot);
 
         m_connectedClients++;
