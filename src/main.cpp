@@ -17,6 +17,7 @@ int main(int argc, char **argv)
         std::cout << "Please enter options. Usage:\n";
         std::cout << "./pong client\n";
         std::cout << "./pong server\n";
+        return EXIT_SUCCESS;
     }
     std::vector<std::string> options;
     for (int i = 0; i < argc; i++) {
@@ -24,8 +25,12 @@ int main(int argc, char **argv)
     }
 
     if (options[1] == "client") {
+        Client client;
+        client.run();
     }
     else if (options[1] == "server") {
+        Server server;
+        server.run();
     }
     else {
         printOptions();

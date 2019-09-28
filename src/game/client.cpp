@@ -34,6 +34,9 @@ void Client::handleWindowEvents()
             case sf::Event::Closed:
                 m_window.close();
                 break;
+
+            default:
+                break;
         }
     }
 }
