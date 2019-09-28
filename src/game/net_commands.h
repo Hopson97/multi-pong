@@ -6,7 +6,7 @@ using Command_t = uint8_t;
 using Client_t = uint8_t;
 using Port_t = uint16_t;
 
-constexpr unsigned CONNECTIONS = 4;
+constexpr unsigned MAX_CONNECTIONS = 4;
 
 enum class CommandsToServer : Command_t {
     // Pure

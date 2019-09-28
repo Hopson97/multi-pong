@@ -6,6 +6,7 @@ Server::Server()
 {
     m_socket.setBlocking(false);
     m_socket.bind(54321);
+    m_connects.fill(false);
 }
 
 void Server::run()
@@ -39,4 +40,30 @@ void Server::handleConnect(const sf::Packet &packet,
     std::cout << "Client requesting connection\n"
               << "From IP: " << address.toString() << '\n'
               << "From port: " << (int)port << std::endl;
+
+    if (m_connectedClients < MAX_CONNECTIONS) {
+        std::cout << "Connection is able to be made!" << std::endl;
+
+        auto slot = emptySlot();
+        auto &client = getClient(slot);
+        client.address = address;
+        client.port = port;
+
+        sf::Packet packet;
+        packet << CommandsToClient::AcceptConnection;
+        sendTo(packet, slot);
+
+        m_connectedClients++;
+    }
+    std::cout << "--\n\n";
+}
+
+int Server::emptySlot()
+{
+    for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
+        if (!m_connects[i]) {
+            return i;
+        }
+    }
+    return -1;
 }
