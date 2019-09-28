@@ -21,6 +21,13 @@ enum class CommandsToClient : Command_t {
     AcceptConnection,
 };
 
+enum Input : uint16_t {
+    FOWARDS = 0x1,
+    BACK    = 0x2,
+    LEFT    = 0x4,
+    RIGHT   = 0x8
+};
+
 sf::Packet &operator>>(sf::Packet &packet, CommandsToServer &command);
 sf::Packet &operator>>(sf::Packet &packet, CommandsToClient &command);
 sf::Packet &operator<<(sf::Packet &packet, CommandsToServer command);

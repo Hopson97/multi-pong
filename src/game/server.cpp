@@ -1,6 +1,7 @@
 #include "server.h"
 
 #include <iostream>
+#include <thread>
 
 Server::Server()
 {
@@ -12,6 +13,7 @@ Server::Server()
 void Server::run()
 {
     while (true) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
         sf::Packet packet;
         sf::IpAddress address;
         Port_t port;
@@ -29,7 +31,7 @@ void Server::run()
 
 void Server::sendTo(sf::Packet &packet, Client_t clientId)
 {
-    auto &client = getClient(clientId);
+    auto &client = getClientEndPoint(clientId);
     m_socket.send(packet, client.address, client.port);
 }
 
@@ -45,7 +47,7 @@ void Server::handleConnect(const sf::Packet &packet,
         std::cout << "Connection is able to be made!" << std::endl;
 
         auto slot = emptySlot();
-        auto &client = getClient(slot);
+        auto &client = getClientEndPoint(slot);
         client.address = address;
         client.port = port;
 

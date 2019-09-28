@@ -5,10 +5,9 @@
 #include <array>
 #include <queue>
 
-struct ConnectedClient {
+struct ClientEndPoint {
     sf::IpAddress address;
     Port_t port;
-    Client_t id;
 };
 
 class Server {
@@ -25,17 +24,17 @@ class Server {
                        Port_t port);
 
     template <typename T>
-    ConnectedClient &getClient(T slot);
+    ClientEndPoint &getClientEndPoint(T slot);
 
     sf::UdpSocket m_socket;
 
     unsigned m_connectedClients = 0;
-    std::array<ConnectedClient, MAX_CONNECTIONS> m_clients;
+    std::array<ClientEndPoint, MAX_CONNECTIONS> m_clientEndPoints;
     std::array<bool, MAX_CONNECTIONS> m_connects;
 };
 
 template <typename T>
-ConnectedClient &Server::getClient(T slot)
+ClientEndPoint &Server::getClientEndPoint(T slot)
 {
-    return m_clients[static_cast<size_t>(slot)];
+    return m_clientEndPoints[static_cast<size_t>(slot)];
 }
