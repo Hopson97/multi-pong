@@ -6,8 +6,17 @@
 #include <queue>
 
 struct ClientEndPoint {
+    sf::Time lastHeard;
     sf::IpAddress address;
+
     Port_t port;
+
+    
+};
+
+struct ClientInput {
+    int32_t up;
+    int32_t down;
 };
 
 class Server {
