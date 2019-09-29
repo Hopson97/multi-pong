@@ -39,6 +39,9 @@ void Server::recievePackets()
                 handleConnect(packet, address, port);
                 break;
 
+            case CommandsToServer::Disconnect:
+                break;
+
             case CommandsToServer::Input:
                 handleInput(packet);
                 break;
@@ -46,7 +49,19 @@ void Server::recievePackets()
     }
 }
 
-void Server::sendState() {}
+void Server::sendState()
+{
+    for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
+        if (m_connects[i]) {
+            auto &client = getClientState(i);
+            sf::Packet packet;
+            packet << CommandsToClient::State << client.position.x
+                   << client.position.y;
+
+            sendTo(packet, static_cast<Client_t>(i));
+        }
+    }
+}
 
 void Server::handleConnect(const sf::Packet &packet,
                            const sf::IpAddress &address, Port_t port)
@@ -67,7 +82,7 @@ void Server::handleConnect(const sf::Packet &packet,
         sf::Packet packet;
         packet << CommandsToClient::ConnectRequestResult << (uint8_t)1
                << static_cast<Client_t>(slot);
-        sendTo(packet, slot);
+        sendTo(packet, static_cast<Client_t>(slot));
 
         m_connectedClients++;
     }

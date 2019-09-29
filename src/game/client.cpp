@@ -58,6 +58,10 @@ void Client::run()
             send(clientInput);
         }
 
+        // Receive packets
+        {
+        }
+
         // Render
         m_window.clear();
         for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
