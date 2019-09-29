@@ -19,7 +19,7 @@ class Client {
     void send(sf::Packet &packet);
     void handleWindowEvents();
 
-    void connect(sf::Packet& packet);
+    void connect(sf::Packet &packet);
 
     unsigned m_connectedClients = 0;
     std::array<ClientPeer, MAX_CONNECTIONS> m_peers;
@@ -30,11 +30,11 @@ class Client {
     sf::RenderWindow m_window;
     Keyboard m_keys;
 
-    //Server info
+    // Server info
     sf::IpAddress m_remoteAddress;
     Port_t m_remotePort;
 
-    //Id 
+    // Id
     Client_t m_clientId;
     bool m_isConnected = false;
 };

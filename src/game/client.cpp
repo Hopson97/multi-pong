@@ -1,7 +1,7 @@
 #include "client.h"
 
-#include <iostream>
 #include <bitset>
+#include <iostream>
 
 Client::Client()
     : m_remoteAddress(sf::IpAddress::LocalHost)
@@ -38,7 +38,7 @@ void Client::run()
     while (m_window.isOpen()) {
         handleWindowEvents();
 
-        //Input
+        // Input
         Input_t input = 0;
         if (m_keys.isKeyDown(sf::Keyboard::W))
             input |= Input::FOWARDS;
@@ -53,13 +53,14 @@ void Client::run()
             input |= Input::RIGHT;
 
         if (input) {
-            std::cout << "Input: " << std::bitset<sizeof(Input_t) * 8>(input) << std::endl;
+            std::cout << "Input: " << std::bitset<sizeof(Input_t) * 8>(input)
+                      << std::endl;
             sf::Packet clientInput;
             clientInput << CommandsToServer::Input << m_clientId << input;
             send(clientInput);
         }
 
-        //Render
+        // Render
         m_window.clear();
         for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
             if (m_connects[i]) {
@@ -75,7 +76,8 @@ void Client::send(sf::Packet &packet)
     m_socket.send(packet, m_remoteAddress, m_remotePort);
 }
 
-void Client::connect(sf::Packet& packet) {
+void Client::connect(sf::Packet &packet)
+{
     std::cout << "Connection request accepted!" << std::endl;
     packet >> m_clientId;
     m_isConnected = true;

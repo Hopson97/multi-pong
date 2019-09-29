@@ -13,27 +13,30 @@ enum class CommandsToServer : Command_t {
     // Pure
     Connect,
 
+    // Enum
+    // Client_t id
+    Disconnect,
+
     /*
         Enum
         Client_t ClientID
         Input_t Input
     */
-   Input,
+    Input,
 };
 
 enum class CommandsToClient : Command_t {
     // Enum
     // uint8_t, 0 = fail, 1 = success
     // client_t id
-    ConnectRequestResult
+    ConnectRequestResult,
+
+    // Enum
+    // Data
+    State,
 };
 
-enum Input : Input_t {
-    FOWARDS = 0x1,
-    BACK    = 0x2,
-    LEFT    = 0x4,
-    RIGHT   = 0x8
-};
+enum Input : Input_t { FOWARDS = 0x1, BACK = 0x2, LEFT = 0x4, RIGHT = 0x8 };
 
 sf::Packet &operator>>(sf::Packet &packet, CommandsToServer &command);
 sf::Packet &operator>>(sf::Packet &packet, CommandsToClient &command);

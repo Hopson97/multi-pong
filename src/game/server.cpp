@@ -1,7 +1,7 @@
 #include "server.h"
 
-#include <iostream>
 #include <bitset>
+#include <iostream>
 #include <thread>
 
 Server::Server()
@@ -15,22 +15,8 @@ void Server::run()
 {
     while (true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        sf::Packet packet;
-        sf::IpAddress address;
-        Port_t port;
-        while (m_socket.receive(packet, address, port) == sf::Socket::Done) {
-            CommandsToServer command;
-            packet >> command;
-            switch (command) {
-                case CommandsToServer::Connect:
-                    handleConnect(packet, address, port);
-                    break;
-
-                case CommandsToServer::Input:
-                    handleInput(packet);
-                    break;
-            }
-        }
+        recievePackets();
+        sendState();
     }
 }
 
@@ -39,6 +25,28 @@ void Server::sendTo(sf::Packet &packet, Client_t clientId)
     auto &client = getClientEndPoint(clientId);
     m_socket.send(packet, client.address, client.port);
 }
+
+void Server::recievePackets()
+{
+    sf::Packet packet;
+    sf::IpAddress address;
+    Port_t port;
+    while (m_socket.receive(packet, address, port) == sf::Socket::Done) {
+        CommandsToServer command;
+        packet >> command;
+        switch (command) {
+            case CommandsToServer::Connect:
+                handleConnect(packet, address, port);
+                break;
+
+            case CommandsToServer::Input:
+                handleInput(packet);
+                break;
+        }
+    }
+}
+
+void Server::sendState() {}
 
 void Server::handleConnect(const sf::Packet &packet,
                            const sf::IpAddress &address, Port_t port)
@@ -57,7 +65,8 @@ void Server::handleConnect(const sf::Packet &packet,
         client.port = port;
 
         sf::Packet packet;
-        packet << CommandsToClient::ConnectRequestResult << (uint8_t)1 << static_cast<Client_t>(slot);
+        packet << CommandsToClient::ConnectRequestResult << (uint8_t)1
+               << static_cast<Client_t>(slot);
         sendTo(packet, slot);
 
         m_connectedClients++;
@@ -65,13 +74,13 @@ void Server::handleConnect(const sf::Packet &packet,
     std::cout << "--\n\n";
 }
 
-void Server::handleInput(sf::Packet& packet) 
+void Server::handleInput(sf::Packet &packet)
 {
     Client_t id;
     Input_t input;
     packet >> id >> input;
 
-    auto& state = getClientState(id);
+    auto &state = getClientState(id);
     if (input & Input::FOWARDS) {
         state.position.y += 1;
     }
@@ -87,7 +96,8 @@ void Server::handleInput(sf::Packet& packet)
 
     std::cout << "Stamp: " << m_clock.getElapsedTime().asSeconds() << std::endl;
     std::cout << "Input recieved from client" << std::endl;
-    std::cout << "Input: " << std::bitset<sizeof(Input_t) * 8>(input) << std::endl;
+    std::cout << "Input: " << std::bitset<sizeof(Input_t) * 8>(input)
+              << std::endl;
     std::cout << "--\n\n";
 }
 

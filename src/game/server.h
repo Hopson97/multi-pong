@@ -30,12 +30,15 @@ class Server {
     void run();
 
   private:
+    void recievePackets();
+    void sendState();
+
     void sendTo(sf::Packet &packet, Client_t client);
     int emptySlot();
 
     void handleConnect(const sf::Packet &packet, const sf::IpAddress &address,
                        Port_t port);
-    void handleInput(sf::Packet& packet);
+    void handleInput(sf::Packet &packet);
 
     template <typename T>
     ClientEndPoint &getClientEndPoint(T slot);
