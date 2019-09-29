@@ -14,6 +14,7 @@ struct ClientEndPoint {
 
 struct ClientState {
     sf::Vector2f position;
+    //sf::Vector2f speed;
 };
 
 struct ClientInput {

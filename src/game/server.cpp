@@ -96,17 +96,18 @@ void Server::handleInput(sf::Packet &packet)
     packet >> id >> input;
 
     auto &state = getClientState(id);
+    const float delta = 3.5f;
     if (input & Input::FOWARDS) {
-        state.position.y -= 1;
+        state.position.y -= delta;
     }
     if (input & Input::BACK) {
-        state.position.y += 1;
+        state.position.y += delta;
     }
     if (input & Input::LEFT) {
-        state.position.x -= 1;
+        state.position.x -= delta;
     }
     if (input & Input::RIGHT) {
-        state.position.x += 1;
+        state.position.x += delta;
     }
 
     std::cout << "Stamp: " << m_clock.getElapsedTime().asSeconds() << std::endl;
