@@ -3,6 +3,7 @@
 #include <bitset>
 #include <iostream>
 #include <thread>
+#include <cmath>
 
 Server::Server()
 {
@@ -98,17 +99,20 @@ void Server::handleInput(sf::Packet &packet)
     auto &state = getClientState(id);
     const float delta = 3.5f;
     if (input & Input::FOWARDS) {
-        state.position.y -= delta;
+        state.speed = delta;
     }
     if (input & Input::BACK) {
-        state.position.y += delta;
+        state.speed = -delta;
     }
     if (input & Input::LEFT) {
-        state.position.x -= delta;
+        state.angle -= 1;
     }
     if (input & Input::RIGHT) {
-        state.position.x += delta;
+        state.angle += 1;
     }
+
+    state.position.x += state.speed * std::sin(state.angle);
+    state.position.y += state.speed * std::cos(state.angle);
 
     std::cout << "Stamp: " << m_clock.getElapsedTime().asSeconds() << std::endl;
     std::cout << "Input recieved from client" << std::endl;
