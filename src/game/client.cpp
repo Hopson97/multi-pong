@@ -53,8 +53,6 @@ void Client::run()
             input |= Input::RIGHT;
 
         if (input) {
-            std::cout << "Input: " << std::bitset<sizeof(Input_t) * 8>(input)
-                      << std::endl;
             sf::Packet clientInput;
             clientInput << CommandsToServer::Input << m_clientId << input;
             send(clientInput);
