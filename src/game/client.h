@@ -20,6 +20,7 @@ class Client {
     void handleWindowEvents();
 
     void connect(sf::Packet &packet);
+    void handleStateRecieve(sf::Packet &packet);
 
     unsigned m_connectedClients = 0;
     std::array<ClientPeer, MAX_CONNECTIONS> m_peers;

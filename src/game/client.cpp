@@ -60,6 +60,22 @@ void Client::run()
 
         // Receive packets
         {
+            sf::Packet packet;
+            sf::IpAddress address;
+            Port_t port;
+            while (m_socket.receive(packet, address, port) ==
+                   sf::Socket::Done) {
+                CommandsToClient command;
+                packet >> command;
+                switch (command) {
+                    case CommandsToClient::ConnectRequestResult:
+                        break;
+
+                    case CommandsToClient::State:
+                        handleStateRecieve(packet);
+                        break;
+                }
+            }
         }
 
         // Render
@@ -88,6 +104,16 @@ void Client::connect(sf::Packet &packet)
     m_connects[slot] = true;
     m_peers[slot].sprite.setFillColor(sf::Color::Red);
     m_peers[slot].sprite.setRadius(20.0f);
+    std::cout << "Connection is able to be made!" << std::endl;
+
+    m_socket.setBlocking(false);
+}
+
+void Client::handleStateRecieve(sf::Packet &packet)
+{
+    float x, y;
+    packet >> x >> y;
+    m_peers[m_clientId].sprite.setPosition(x, y);
 }
 
 void Client::handleWindowEvents()

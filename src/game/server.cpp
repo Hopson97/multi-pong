@@ -57,7 +57,6 @@ void Server::sendState()
             sf::Packet packet;
             packet << CommandsToClient::State << client.position.x
                    << client.position.y;
-
             sendTo(packet, static_cast<Client_t>(i));
         }
     }
@@ -84,6 +83,7 @@ void Server::handleConnect(const sf::Packet &packet,
                << static_cast<Client_t>(slot);
         sendTo(packet, static_cast<Client_t>(slot));
 
+        m_connects[slot] = true;
         m_connectedClients++;
     }
     std::cout << "--\n\n";
@@ -97,10 +97,10 @@ void Server::handleInput(sf::Packet &packet)
 
     auto &state = getClientState(id);
     if (input & Input::FOWARDS) {
-        state.position.y += 1;
+        state.position.y -= 1;
     }
     if (input & Input::BACK) {
-        state.position.y -= 1;
+        state.position.y += 1;
     }
     if (input & Input::LEFT) {
         state.position.x -= 1;
