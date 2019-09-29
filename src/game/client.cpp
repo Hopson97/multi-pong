@@ -1,6 +1,7 @@
 #include "client.h"
 
 #include <iostream>
+#include <bitset>
 
 Client::Client()
     : m_remoteAddress(sf::IpAddress::LocalHost)
@@ -16,19 +17,10 @@ Client::Client()
         Port_t port;
         if (m_socket.receive(packet, address, port) == sf::Socket::Done) {
             CommandsToClient command;
-            packet >> command;
-            switch (command)
-            {
-            case CommandsToClient::AcceptConnection:
+            uint8_t result;
+            packet >> command >> result;
+            if (result) {
                 connect(packet);
-                break;
-
-            case CommandsToClient::RejectConnection:
-                std::cout << "Connection rejected." << std::endl;
-                break;
-            
-            default:
-                break;
             }
         }
     }
@@ -45,6 +37,27 @@ void Client::run()
 
     while (m_window.isOpen()) {
         handleWindowEvents();
+
+        //Input
+        Input_t input = 0;
+        if (m_keys.isKeyDown(sf::Keyboard::W))
+            input |= Input::FOWARDS;
+
+        if (m_keys.isKeyDown(sf::Keyboard::A))
+            input |= Input::LEFT;
+
+        if (m_keys.isKeyDown(sf::Keyboard::S))
+            input |= Input::BACK;
+
+        if (m_keys.isKeyDown(sf::Keyboard::D))
+            input |= Input::RIGHT;
+
+        if (input) {
+            std::cout << "Input: " << std::bitset<sizeof(Input_t) * 8>(input) << std::endl;
+            sf::Packet clientInput;
+            clientInput << CommandsToServer::Input << m_clientId << input;
+            send(clientInput);
+        }
 
         //Render
         m_window.clear();

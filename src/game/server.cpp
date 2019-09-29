@@ -1,6 +1,7 @@
 #include "server.h"
 
 #include <iostream>
+#include <bitset>
 #include <thread>
 
 Server::Server()
@@ -23,6 +24,10 @@ void Server::run()
             switch (command) {
                 case CommandsToServer::Connect:
                     handleConnect(packet, address, port);
+                    break;
+
+                case CommandsToServer::Input:
+                    handleInput(packet);
                     break;
             }
         }
@@ -52,11 +57,37 @@ void Server::handleConnect(const sf::Packet &packet,
         client.port = port;
 
         sf::Packet packet;
-        packet << CommandsToClient::AcceptConnection << static_cast<Client_t>(slot);
+        packet << CommandsToClient::ConnectRequestResult << (uint8_t)1 << static_cast<Client_t>(slot);
         sendTo(packet, slot);
 
         m_connectedClients++;
     }
+    std::cout << "--\n\n";
+}
+
+void Server::handleInput(sf::Packet& packet) 
+{
+    Client_t id;
+    Input_t input;
+    packet >> id >> input;
+
+    auto& state = getClientState(id);
+    if (input & Input::FOWARDS) {
+        state.position.y += 1;
+    }
+    if (input & Input::BACK) {
+        state.position.y -= 1;
+    }
+    if (input & Input::LEFT) {
+        state.position.x -= 1;
+    }
+    if (input & Input::RIGHT) {
+        state.position.x += 1;
+    }
+
+    std::cout << "Stamp: " << m_clock.getElapsedTime().asSeconds() << std::endl;
+    std::cout << "Input recieved from client" << std::endl;
+    std::cout << "Input: " << std::bitset<sizeof(Input_t) * 8>(input) << std::endl;
     std::cout << "--\n\n";
 }
 

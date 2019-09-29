@@ -5,23 +5,30 @@
 using Command_t = uint8_t;
 using Client_t = uint8_t;
 using Port_t = uint16_t;
+using Input_t = uint8_t;
 
 constexpr unsigned MAX_CONNECTIONS = 4;
 
 enum class CommandsToServer : Command_t {
     // Pure
     Connect,
+
+    /*
+        Enum
+        Client_t ClientID
+        Input_t Input
+    */
+   Input,
 };
 
 enum class CommandsToClient : Command_t {
-    // Pure
-    RejectConnection,
-
-    // Pure
-    AcceptConnection,
+    // Enum
+    // uint8_t, 0 = fail, 1 = success
+    // client_t id
+    ConnectRequestResult
 };
 
-enum Input : uint16_t {
+enum Input : Input_t {
     FOWARDS = 0x1,
     BACK    = 0x2,
     LEFT    = 0x4,
