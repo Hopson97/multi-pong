@@ -6,7 +6,7 @@
 #include <SFML/Network.hpp>
 
 struct ClientPeer {
-    sf::CircleShape sprite;
+    sf::RectangleShape sprite;
 };
 
 class Client {

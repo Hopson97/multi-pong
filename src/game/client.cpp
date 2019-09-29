@@ -103,7 +103,8 @@ void Client::connect(sf::Packet &packet)
     auto slot = static_cast<std::size_t>(m_clientId);
     m_connects[slot] = true;
     m_peers[slot].sprite.setFillColor(sf::Color::Red);
-    m_peers[slot].sprite.setRadius(20.0f);
+    m_peers[slot].sprite.setSize({100, 50});
+    m_peers[slot].sprite.setOrigin({50, 25});
     std::cout << "Connection is able to be made!" << std::endl;
 
     m_socket.setBlocking(false);
@@ -111,9 +112,13 @@ void Client::connect(sf::Packet &packet)
 
 void Client::handleStateRecieve(sf::Packet &packet)
 {
-    float x, y;
-    packet >> x >> y;
+    float x;
+    float y;
+    float angle;
+    packet >> x >> y >> angle;
+
     m_peers[m_clientId].sprite.setPosition(x, y);
+    m_peers[m_clientId].sprite.setRotation(angle);
 }
 
 void Client::handleWindowEvents()

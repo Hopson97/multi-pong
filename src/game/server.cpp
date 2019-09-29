@@ -57,7 +57,7 @@ void Server::sendState()
             auto &client = getClientState(i);
             sf::Packet packet;
             packet << CommandsToClient::State << client.position.x
-                   << client.position.y;
+                   << client.position.y  << client.angle;
             sendTo(packet, static_cast<Client_t>(i));
         }
     }
@@ -98,6 +98,7 @@ void Server::handleInput(sf::Packet &packet)
 
     auto &state = getClientState(id);
     const float delta = 3.5f;
+    state.speed = 0;
     if (input & Input::FOWARDS) {
         state.speed = delta;
     }
@@ -111,8 +112,8 @@ void Server::handleInput(sf::Packet &packet)
         state.angle += 1;
     }
 
-    state.position.x += state.speed * std::sin(state.angle);
-    state.position.y += state.speed * std::cos(state.angle);
+    state.position.x += state.speed * std::cos((state.angle + 90) * 3.14159f / 180.0f);
+    state.position.y += state.speed * std::sin((state.angle + 90) * 3.14159f / 180.0f);
 
     std::cout << "Stamp: " << m_clock.getElapsedTime().asSeconds() << std::endl;
     std::cout << "Input recieved from client" << std::endl;
