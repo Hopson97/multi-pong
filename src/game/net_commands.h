@@ -34,6 +34,7 @@ enum class CommandsToClient : Command_t {
     ConnectRequestResult,
 
     // Enum
+    // id
     // Data [x, y, angle]
     State,
 };

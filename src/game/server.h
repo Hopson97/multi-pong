@@ -14,15 +14,15 @@ struct ClientEndPoint {
 
 struct ClientState {
     sf::Vector2f position;
-    float speed;
-    float angle;
+    float speed = 0;
+    float angle = 0;
 };
 
 struct ClientInput {
-    int32_t up;
-    int32_t down;
-    int32_t left;
-    int32_t right;
+    int32_t forwards = 0;
+    int32_t backwards = 0;
+    int32_t left = 0;
+    int32_t right = 0;
 };
 
 class Server {
@@ -33,6 +33,7 @@ class Server {
 
   private:
     void recievePackets();
+    void updateState();
     void sendState();
 
     void sendTo(sf::Packet &packet, Client_t client);

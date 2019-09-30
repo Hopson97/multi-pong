@@ -24,6 +24,12 @@ Client::Client()
             }
         }
     }
+
+    for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
+        m_peers[i].sprite.setFillColor(sf::Color::Red);
+        m_peers[i].sprite.setSize({40, 20});
+        m_peers[i].sprite.setOrigin({20, 10});
+    }
 }
 
 void Client::run()
@@ -52,11 +58,11 @@ void Client::run()
         if (m_keys.isKeyDown(sf::Keyboard::D))
             input |= Input::RIGHT;
 
-        if (input) {
-            sf::Packet clientInput;
-            clientInput << CommandsToServer::Input << m_clientId << input;
-            send(clientInput);
-        }
+        // if (input) {
+        sf::Packet clientInput;
+        clientInput << CommandsToServer::Input << m_clientId << input;
+        send(clientInput);
+        //   }
 
         // Receive packets
         {
@@ -102,9 +108,7 @@ void Client::connect(sf::Packet &packet)
 
     auto slot = static_cast<std::size_t>(m_clientId);
     m_connects[slot] = true;
-    m_peers[slot].sprite.setFillColor(sf::Color::Red);
-    m_peers[slot].sprite.setSize({40, 20});
-    m_peers[slot].sprite.setOrigin({20, 10});
+    m_peers[slot].sprite.setFillColor(sf::Color::Blue);
     std::cout << "Connection is able to be made!" << std::endl;
 
     m_socket.setBlocking(false);
@@ -112,13 +116,17 @@ void Client::connect(sf::Packet &packet)
 
 void Client::handleStateRecieve(sf::Packet &packet)
 {
+    Client_t id;
     float x;
     float y;
     float angle;
-    packet >> x >> y >> angle;
+    packet >> id >> x >> y >> angle;
 
-    m_peers[m_clientId].sprite.setPosition(x, y);
-    m_peers[m_clientId].sprite.setRotation(angle);
+    std::cout << (int)id << std::endl;
+
+    m_connects[id] = true;
+    m_peers[id].sprite.setPosition(x, y);
+    m_peers[id].sprite.setRotation(angle);
 }
 
 void Client::handleWindowEvents()

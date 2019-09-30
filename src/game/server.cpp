@@ -21,6 +21,7 @@ void Server::run()
     while (true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
         recievePackets();
+        updateState();
         sendState();
     }
 }
@@ -54,15 +55,50 @@ void Server::recievePackets()
     }
 }
 
+void Server::updateState()
+{
+    for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
+        if (m_connects[i]) {
+            auto &input = m_clientInputs[i];
+            auto &state = m_clientStates[i];
+
+            const float delta = 3.5f;
+            state.speed = 0;
+            if (input.forwards) {
+                state.speed = delta;
+            }
+            if (input.backwards) {
+                state.speed = -delta;
+            }
+            if (input.left) {
+                state.angle -= 5;
+            }
+            if (input.right) {
+                state.angle += 5;
+            }
+
+            state.position.x +=
+                state.speed * std::cos((state.angle + 90) * 3.14159f / 180.0f);
+            state.position.y +=
+                state.speed * std::sin((state.angle + 90) * 3.14159f / 180.0f);
+        }
+    }
+}
+
 void Server::sendState()
 {
     for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
         if (m_connects[i]) {
             auto &client = getClientState(i);
             sf::Packet packet;
-            packet << CommandsToClient::State << client.position.x
-                   << client.position.y << client.angle;
-            sendTo(packet, static_cast<Client_t>(i));
+            packet << CommandsToClient::State << static_cast<Client_t>(i)
+                   << client.position.x << client.position.y << client.angle;
+
+            for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
+                if (m_connects[i]) {
+                    sendTo(packet, static_cast<Client_t>(i));
+                }
+            }
         }
     }
 }
@@ -99,27 +135,15 @@ void Server::handleInput(sf::Packet &packet)
     Input_t input;
     packet >> id >> input;
 
-    auto &state = getClientState(id);
-    const float delta = 3.5f;
-    state.speed = 0;
-    if (input & Input::FOWARDS) {
-        state.speed = delta;
-    }
-    if (input & Input::BACK) {
-        state.speed = -delta;
-    }
-    if (input & Input::LEFT) {
-        state.angle -= 5;
-    }
-    if (input & Input::RIGHT) {
-        state.angle += 5;
-    }
+    auto &inputState = m_clientInputs[id];
+    inputState.forwards = input & Input::FOWARDS;
+    inputState.backwards = input & Input::BACK;
+    inputState.left = input & Input::LEFT;
+    inputState.right = input & Input::RIGHT;
 
-    state.position.x +=
-        state.speed * std::cos((state.angle + 90) * 3.14159f / 180.0f);
-    state.position.y +=
-        state.speed * std::sin((state.angle + 90) * 3.14159f / 180.0f);
+    /*
 
+    */
     std::cout << "Stamp: " << m_clock.getElapsedTime().asSeconds() << std::endl;
     std::cout << "Input recieved from client" << std::endl;
     std::cout << "Input: " << std::bitset<sizeof(Input_t) * 8>(input)
