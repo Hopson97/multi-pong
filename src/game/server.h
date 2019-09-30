@@ -38,8 +38,7 @@ class Server {
     void sendTo(sf::Packet &packet, Client_t client);
     int emptySlot();
 
-    void handleConnect(const sf::Packet &packet, const sf::IpAddress &address,
-                       Port_t port);
+    void handleConnect(const sf::IpAddress &address, Port_t port);
     void handleInput(sf::Packet &packet);
 
     template <typename T>

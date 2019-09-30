@@ -31,7 +31,7 @@ void Client::run()
     if (!m_isConnected) {
         return;
     }
-    m_window.create({600, 400}, "Pong");
+    m_window.create({WIN_WIDTH, WIN_HEIGHT}, "Pong");
     m_window.setFramerateLimit(60);
     m_window.setKeyRepeatEnabled(false);
 
@@ -103,8 +103,8 @@ void Client::connect(sf::Packet &packet)
     auto slot = static_cast<std::size_t>(m_clientId);
     m_connects[slot] = true;
     m_peers[slot].sprite.setFillColor(sf::Color::Red);
-    m_peers[slot].sprite.setSize({100, 50});
-    m_peers[slot].sprite.setOrigin({50, 25});
+    m_peers[slot].sprite.setSize({40, 20});
+    m_peers[slot].sprite.setOrigin({20, 10});
     std::cout << "Connection is able to be made!" << std::endl;
 
     m_socket.setBlocking(false);

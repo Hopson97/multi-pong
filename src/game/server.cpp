@@ -1,9 +1,13 @@
 #include "server.h"
 
 #include <bitset>
+#include <cmath>
 #include <iostream>
 #include <thread>
-#include <cmath>
+
+using Clock = std::chrono::high_resolution_clock;
+using Time = std::chrono::microseconds;
+using Time_t = std::uint64_t;
 
 Server::Server()
 {
@@ -15,7 +19,7 @@ Server::Server()
 void Server::run()
 {
     while (true) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
         recievePackets();
         sendState();
     }
@@ -37,7 +41,7 @@ void Server::recievePackets()
         packet >> command;
         switch (command) {
             case CommandsToServer::Connect:
-                handleConnect(packet, address, port);
+                handleConnect(address, port);
                 break;
 
             case CommandsToServer::Disconnect:
@@ -57,16 +61,14 @@ void Server::sendState()
             auto &client = getClientState(i);
             sf::Packet packet;
             packet << CommandsToClient::State << client.position.x
-                   << client.position.y  << client.angle;
+                   << client.position.y << client.angle;
             sendTo(packet, static_cast<Client_t>(i));
         }
     }
 }
 
-void Server::handleConnect(const sf::Packet &packet,
-                           const sf::IpAddress &address, Port_t port)
+void Server::handleConnect(const sf::IpAddress &address, Port_t port)
 {
-    (void)packet;
     std::cout << "Client requesting connection\n"
               << "From IP: " << address.toString() << '\n'
               << "From port: " << (int)port << std::endl;
@@ -84,6 +86,7 @@ void Server::handleConnect(const sf::Packet &packet,
                << static_cast<Client_t>(slot);
         sendTo(packet, static_cast<Client_t>(slot));
 
+        m_clientStates[slot].position = {WIN_WIDTH / 2, WIN_HEIGHT / 2};
         m_connects[slot] = true;
         m_connectedClients++;
     }
@@ -106,14 +109,16 @@ void Server::handleInput(sf::Packet &packet)
         state.speed = -delta;
     }
     if (input & Input::LEFT) {
-        state.angle -= 1;
+        state.angle -= 5;
     }
     if (input & Input::RIGHT) {
-        state.angle += 1;
+        state.angle += 5;
     }
 
-    state.position.x += state.speed * std::cos((state.angle + 90) * 3.14159f / 180.0f);
-    state.position.y += state.speed * std::sin((state.angle + 90) * 3.14159f / 180.0f);
+    state.position.x +=
+        state.speed * std::cos((state.angle + 90) * 3.14159f / 180.0f);
+    state.position.y +=
+        state.speed * std::sin((state.angle + 90) * 3.14159f / 180.0f);
 
     std::cout << "Stamp: " << m_clock.getElapsedTime().asSeconds() << std::endl;
     std::cout << "Input recieved from client" << std::endl;

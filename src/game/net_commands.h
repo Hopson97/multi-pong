@@ -8,6 +8,8 @@ using Port_t = uint16_t;
 using Input_t = uint8_t;
 
 constexpr unsigned MAX_CONNECTIONS = 4;
+constexpr unsigned WIN_WIDTH = 600;
+constexpr unsigned WIN_HEIGHT = 400;
 
 enum class CommandsToServer : Command_t {
     // Pure
