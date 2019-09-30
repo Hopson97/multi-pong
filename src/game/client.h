@@ -35,6 +35,9 @@ class Client {
     sf::IpAddress m_remoteAddress;
     Port_t m_remotePort;
 
+    //Entity
+    sf::RectangleShape m_ball;
+
     // Id
     Client_t m_clientId;
     bool m_isConnected = false;
