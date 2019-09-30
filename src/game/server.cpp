@@ -9,6 +9,28 @@ using Clock = std::chrono::high_resolution_clock;
 using Time = std::chrono::microseconds;
 using Time_t = std::uint64_t;
 
+namespace {
+    void testWinBounds(sf::Vector2f &position, float &speed)
+    {
+        if (position.x > WIN_WIDTH) {
+            position.x = WIN_WIDTH - 1;
+            speed = 0;
+        }
+        else if (position.x < 0) {
+            position.x = WINT_WIDTH - 1;
+            speed = 0;
+        }
+        if (position.y > WIN_HEIGHT) {
+            position.y = WIN_HEIGHT - 1;
+            speed = 0;
+        }
+        else if (position.y < 0) {
+            position.y = 1;
+            speed = 0;
+        }
+    }
+} // namespace
+
 Server::Server()
 {
     m_socket.setBlocking(false);
@@ -62,7 +84,7 @@ void Server::updateState()
             auto &input = m_clientInputs[i];
             auto &state = m_clientStates[i];
 
-            const float delta = 1.0f;
+            const float delta = 17.5f;
             if (input.forwards) {
                 state.speed += delta;
             }
@@ -76,32 +98,34 @@ void Server::updateState()
                 state.angle += 5;
             }
 
-            state.speed *= 0.95f;
+            state.speed *= 0.9f;
             if (std::abs(state.speed) < 0.05f) {
                 state.speed = 0.0f;
             }
             state.position.x +=
-                state.speed * std::cos((state.angle + 90) * 3.14159f / 180.0f);
+                state.speed * std::cos((state.angle + 90) * 3.14159f / 180.0f) * 1/60;
             state.position.y +=
-                state.speed * std::sin((state.angle + 90) * 3.14159f / 180.0f);
+                state.speed * std::sin((state.angle + 90) * 3.14159f / 180.0f) * 1/60;
+
+            testWinBounds(state.position, state.speed);
         }
     }
 }
 
 void Server::sendState()
 {
+    sf::Packet packet;
+    packet << CommandsToClient::State;
     for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
         if (m_connects[i]) {
             auto &client = getClientState(i);
-            sf::Packet packet;
-            packet << CommandsToClient::State << static_cast<Client_t>(i)
-                   << client.position.x << client.position.y << client.angle;
-
-            for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
-                if (m_connects[i]) {
-                    sendTo(packet, static_cast<Client_t>(i));
-                }
-            }
+            packet << static_cast<Client_t>(i) << client.position.x
+                   << client.position.y << client.angle;
+        }
+    }
+    for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
+        if (m_connects[i]) {
+            sendTo(packet, static_cast<Client_t>(i));
         }
     }
 }
@@ -145,13 +169,12 @@ void Server::handleInput(sf::Packet &packet)
     inputState.right = input & Input::RIGHT;
 
     /*
-
-    */
     std::cout << "Stamp: " << m_clock.getElapsedTime().asSeconds() << std::endl;
     std::cout << "Input recieved from client" << std::endl;
     std::cout << "Input: " << std::bitset<sizeof(Input_t) * 8>(input)
               << std::endl;
     std::cout << "--\n\n";
+    */
 }
 
 int Server::emptySlot()

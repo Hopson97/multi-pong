@@ -120,10 +120,12 @@ void Client::handleStateRecieve(sf::Packet &packet)
     float x;
     float y;
     float angle;
-    packet >> id >> x >> y >> angle;
-    m_connects[id] = true;
-    m_peers[id].sprite.setPosition(x, y);
-    m_peers[id].sprite.setRotation(angle);
+    while (packet >> id) {
+        packet >> x >> y >> angle;
+        m_connects[id] = true;
+        m_peers[id].sprite.setPosition(x, y);
+        m_peers[id].sprite.setRotation(angle);
+    }
 }
 
 void Client::handleWindowEvents()
