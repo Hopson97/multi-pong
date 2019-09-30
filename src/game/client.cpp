@@ -121,9 +121,6 @@ void Client::handleStateRecieve(sf::Packet &packet)
     float y;
     float angle;
     packet >> id >> x >> y >> angle;
-
-    std::cout << (int)id << std::endl;
-
     m_connects[id] = true;
     m_peers[id].sprite.setPosition(x, y);
     m_peers[id].sprite.setRotation(angle);

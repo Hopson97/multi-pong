@@ -62,13 +62,12 @@ void Server::updateState()
             auto &input = m_clientInputs[i];
             auto &state = m_clientStates[i];
 
-            const float delta = 3.5f;
-            state.speed = 0;
+            const float delta = 1.0f;
             if (input.forwards) {
-                state.speed = delta;
+                state.speed += delta;
             }
             if (input.backwards) {
-                state.speed = -delta;
+                state.speed += -delta;
             }
             if (input.left) {
                 state.angle -= 5;
@@ -77,6 +76,10 @@ void Server::updateState()
                 state.angle += 5;
             }
 
+            state.speed *= 0.95f;
+            if (std::abs(state.speed) < 0.05f) {
+                state.speed = 0.0f;
+            }
             state.position.x +=
                 state.speed * std::cos((state.angle + 90) * 3.14159f / 180.0f);
             state.position.y +=
