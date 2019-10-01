@@ -37,6 +37,10 @@ enum class CommandsToClient : Command_t {
     // id
     // Data [x, y, angle]
     State,
+
+    // Enum
+    // Data [x, y]
+    BallPosition,
 };
 
 enum Input : Input_t { FOWARDS = 0x1, BACK = 0x2, LEFT = 0x4, RIGHT = 0x8 };

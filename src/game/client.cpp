@@ -26,10 +26,12 @@ Client::Client()
     }
 
     for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
-        m_peers[i].sprite.setFillColor(sf::Color::Red);
+        m_peers[i].sprite.setFillColor(sf::Color{100, 50, 154});
         m_peers[i].sprite.setSize({40, 20});
         m_peers[i].sprite.setOrigin({20, 10});
     }
+
+    m_ball.setSize({10, 10});
 }
 
 void Client::run()
@@ -80,6 +82,10 @@ void Client::run()
                     case CommandsToClient::State:
                         handleStateRecieve(packet);
                         break;
+
+                    case CommandsToClient::BallPosition:
+                        handleBallPosition(packet);
+                        break;
                 }
             }
         }
@@ -91,6 +97,8 @@ void Client::run()
                 m_window.draw(m_peers[i].sprite);
             }
         }
+
+        m_window.draw(m_ball);
         m_window.display();
     }
 }
@@ -126,6 +134,14 @@ void Client::handleStateRecieve(sf::Packet &packet)
         m_peers[id].sprite.setPosition(x, y);
         m_peers[id].sprite.setRotation(angle);
     }
+}
+
+void Client::handleBallPosition(sf::Packet &packet)
+{
+    float x;
+    float y;
+    packet >> x >> y;
+    m_ball.setPosition(x, y);
 }
 
 void Client::handleWindowEvents()

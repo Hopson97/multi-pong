@@ -21,6 +21,7 @@ class Client {
 
     void connect(sf::Packet &packet);
     void handleStateRecieve(sf::Packet &packet);
+    void handleBallPosition(sf::Packet &packet);
 
     unsigned m_connectedClients = 0;
     std::array<ClientPeer, MAX_CONNECTIONS> m_peers;
@@ -35,7 +36,7 @@ class Client {
     sf::IpAddress m_remoteAddress;
     Port_t m_remotePort;
 
-    //Entity
+    // Entity
     sf::RectangleShape m_ball;
 
     // Id

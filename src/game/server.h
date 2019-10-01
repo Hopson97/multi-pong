@@ -12,9 +12,10 @@ struct ClientEndPoint {
     Port_t port;
 };
 
-struct ObjectState{
+struct ObjectState {
     sf::Vector2f position;
-    float speed = 0;
+    float speedX = 0;
+    float speedY = 0;
     float angle = 0;
 };
 
@@ -46,7 +47,7 @@ class Server {
     ClientEndPoint &getClientEndPoint(T slot);
 
     template <typename T>
-    ObjectState&getClientState(T slot);
+    ObjectState &getClientState(T slot);
 
     sf::UdpSocket m_socket;
     sf::Clock m_clock;
@@ -67,7 +68,7 @@ ClientEndPoint &Server::getClientEndPoint(T slot)
 }
 
 template <typename T>
-ObjectState&Server::getClientState(T slot)
+ObjectState &Server::getClientState(T slot)
 {
     return m_clientStates[static_cast<size_t>(slot)];
 }
