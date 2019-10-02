@@ -116,7 +116,8 @@ void Client::connect(sf::Packet &packet)
 
     auto slot = static_cast<std::size_t>(m_clientId);
     m_connects[slot] = true;
-    m_peers[slot].sprite.setFillColor(sf::Color::Blue);
+    m_peers[slot].sprite.setOutlineColor(sf::Color::White);
+    m_peers[slot].sprite.setOutlineThickness(2);
     std::cout << "Connection is able to be made!" << std::endl;
 
     m_socket.setBlocking(false);
