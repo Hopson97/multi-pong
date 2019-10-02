@@ -32,7 +32,7 @@ Client::Client()
         m_peers[i].sprite.setSize({PADDLE_WIDTH, PADDLE_HEIGHT});
     }
 
-    m_ball.setSize({10, 10});
+    m_ball.setSize({BALL_SIZE, BALL_SIZE});
 }
 
 void Client::run()

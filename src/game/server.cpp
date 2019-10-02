@@ -19,6 +19,8 @@ Server::Server()
 
     m_ball.bounds.left = WIN_WIDTH / 2.0f;
     m_ball.bounds.top = WIN_HEIGHT / 2.0f;
+    m_ball.bounds.width = BALL_SIZE;
+    m_ball.bounds.height = BALL_SIZE;
     m_ball.speedX = 200;
     m_ball.speedY = 50;
 
@@ -74,7 +76,7 @@ void Server::updateState()
             auto &input = m_clientInputs[i];
             auto &state = m_clientStates[i];
 
-            const float delta = 12.5f;
+            const float delta = 20.5f;
             if (input.up) {
                 state.speedY -= delta;
             }
@@ -91,7 +93,6 @@ void Server::updateState()
                 state.speedY = 0.0f;
             }
 
-            state.bounds.left += state.speedX * (1 / 60.0f);
             state.bounds.top += state.speedY * (1 / 60.0f);
 
             if (state.bounds.top > WIN_HEIGHT) {
@@ -105,9 +106,9 @@ void Server::updateState()
         }
     }
 
+    m_ball.bounds.left += m_ball.speedX * (1 / 60.0f);
     m_ball.bounds.top += m_ball.speedY * (1 / 60.0f);
 
-    float BALL_SIZE = 10;
     if (m_ball.bounds.left + BALL_SIZE > WIN_WIDTH || m_ball.bounds.left <= 0) {
         m_ball.speedX *= -1;
     }
@@ -115,6 +116,8 @@ void Server::updateState()
     if (m_ball.bounds.top + BALL_SIZE > WIN_HEIGHT || m_ball.bounds.top <= 0) {
         m_ball.speedY *= -1;
     }
+
+
 }
 
 void Server::sendState()
