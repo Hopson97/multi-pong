@@ -161,11 +161,11 @@ void Server::handleConnect(const sf::IpAddress &address, Port_t port)
 
         auto &bounds = m_clientStates[slot].bounds;
         if (slot == 0) {
-            bounds.left = 10;
+            bounds.left = 50;
             bounds.top = 10;
         }
         else {
-            bounds.left = WIN_WIDTH - PADDLE_WIDTH - 10;
+            bounds.left = WIN_WIDTH - PADDLE_WIDTH - 50;
             bounds.top = 10;
         }
 
