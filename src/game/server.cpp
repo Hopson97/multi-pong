@@ -5,31 +5,11 @@
 #include <iostream>
 #include <thread>
 
+#include "pong.h"
+
 using Clock = std::chrono::high_resolution_clock;
 using Time = std::chrono::microseconds;
 using Time_t = std::uint64_t;
-
-namespace {
-    void testWinBounds(sf::Vector2f &position, float &speedX, float& speedY)
-    {
-        if (position.x > WIN_WIDTH) {
-            position.x = WIN_WIDTH - 1;
-            speedX = 0;
-        }
-        else if (position.x < 0) {
-            position.x = WINT_WIDTH - 1;
-            speedX = 0;
-        }
-        if (position.y > WIN_HEIGHT) {
-            position.y = WIN_HEIGHT - 1;
-            speedY = 0;
-        }
-        else if (position.y < 0) {
-            position.y = 1;
-            speedY = 0;
-        }
-    }
-} // namespace
 
 Server::Server()
 {
@@ -37,9 +17,15 @@ Server::Server()
     m_socket.bind(54321);
     m_connects.fill(false);
 
-    m_ball.position = {100, 100};
+    m_ball.bounds.left = WIN_WIDTH / 2.0f;
+    m_ball.bounds.top = WIN_HEIGHT / 2.0f;
     m_ball.speedX = 200;
     m_ball.speedY = 50;
+
+    for (auto &state : m_clientStates) {
+        state.bounds.width = PADDLE_WIDTH;
+        state.bounds.height = PADDLE_HEIGHT;
+    }
 }
 
 void Server::run()
@@ -88,24 +74,12 @@ void Server::updateState()
             auto &input = m_clientInputs[i];
             auto &state = m_clientStates[i];
 
-            const float delta = 17.5f;
-            if (input.forwards) {
-                state.speedX +=
-                    std::cos((state.angle + 90) * 3.14159f / 180.0f) * delta;
-                state.speedY +=
-                    std::sin((state.angle + 90) * 3.14159f / 180.0f) * delta;
+            const float delta = 12.5f;
+            if (input.up) {
+                state.speedY -= delta;
             }
-            if (input.backwards) {
-                state.speedX -=
-                    std::cos((state.angle + 90) * 3.14159f / 180.0f) * delta;
-                state.speedY -=
-                    std::sin((state.angle + 90) * 3.14159f / 180.0f) * delta;
-            }
-            if (input.left) {
-                state.angle -= 5;
-            }
-            if (input.right) {
-                state.angle += 5;
+            if (input.down) {
+                state.speedY += delta;
             }
 
             state.speedX *= 0.9f;
@@ -117,22 +91,29 @@ void Server::updateState()
                 state.speedY = 0.0f;
             }
 
-            state.position.x += state.speedX * (1 / 60.0f);
-            state.position.y += state.speedY * (1 / 60.0f);
+            state.bounds.left += state.speedX * (1 / 60.0f);
+            state.bounds.top += state.speedY * (1 / 60.0f);
 
-            testWinBounds(state.position, state.speedX, state.speedY);
+            if (state.bounds.top > WIN_HEIGHT) {
+                state.bounds.top = WIN_HEIGHT - 1;
+                state.speedY = 0;
+            }
+            else if (state.bounds.top < 0) {
+                state.bounds.top = 1;
+                state.speedY = 0;
+            }
         }
     }
 
-    m_ball.position.x += m_ball.speedX * (1 / 60.0f);
-    m_ball.position.y += m_ball.speedY * (1 / 60.0f);
+    m_ball.bounds.left += m_ball.speedX * (1 / 60.0f);
+    m_ball.bounds.top += m_ball.speedY * (1 / 60.0f);
 
     float BALL_SIZE = 10;
-    if (m_ball.position.x + BALL_SIZE > WIN_WIDTH || m_ball.position.x <= 0) {
+    if (m_ball.bounds.left + BALL_SIZE > WIN_WIDTH || m_ball.bounds.left <= 0) {
         m_ball.speedX *= -1;
     }
 
-    if (m_ball.position.y + BALL_SIZE > WIN_HEIGHT || m_ball.position.y <= 0) {
+    if (m_ball.bounds.top + BALL_SIZE > WIN_HEIGHT || m_ball.bounds.top <= 0) {
         m_ball.speedY *= -1;
     }
 }
@@ -144,13 +125,13 @@ void Server::sendState()
     for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
         if (m_connects[i]) {
             auto &client = getClientState(i);
-            packet << static_cast<Client_t>(i) << client.position.x
-                   << client.position.y << client.angle;
+            packet << static_cast<Client_t>(i) << client.bounds.left
+                   << client.bounds.top;
         }
     }
     sf::Packet ballPacket;
-    ballPacket << CommandsToClient::BallPosition << m_ball.position.x
-               << m_ball.position.y;
+    ballPacket << CommandsToClient::BallPosition << m_ball.bounds.left
+               << m_ball.bounds.top;
 
     for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
         if (m_connects[i]) {
@@ -179,7 +160,16 @@ void Server::handleConnect(const sf::IpAddress &address, Port_t port)
                << static_cast<Client_t>(slot);
         sendTo(packet, static_cast<Client_t>(slot));
 
-        m_clientStates[slot].position = {WIN_WIDTH / 2, WIN_HEIGHT / 2};
+        auto &bounds = m_clientStates[slot].bounds;
+        if (slot == 0) {
+            bounds.left = 10;
+            bounds.top = 10;
+        }
+        else {
+            bounds.left = WIN_HEIGHT - PADDLE_WIDTH - 10;
+            bounds.top = 10;
+        }
+
         m_connects[slot] = true;
         m_connectedClients++;
     }
@@ -193,10 +183,8 @@ void Server::handleInput(sf::Packet &packet)
     packet >> id >> input;
 
     auto &inputState = m_clientInputs[id];
-    inputState.forwards = input & Input::FOWARDS;
-    inputState.backwards = input & Input::BACK;
-    inputState.left = input & Input::LEFT;
-    inputState.right = input & Input::RIGHT;
+    inputState.up = input & Input::UP;
+    inputState.down = input & Input::DOWN;
 
     /*
     std::cout << "Stamp: " << m_clock.getElapsedTime().asSeconds() << std::endl;
