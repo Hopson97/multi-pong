@@ -1,6 +1,14 @@
 # multi-pong
 
-description here
+WIP Multiplayer pong using SFML and UDP.
+
+## Log
+
+### 02/10/19
+
+Got 4 players able to run around a map, with the "ball" also there. All positions are calculated on the server and then broadcasted to the clients.
+
+[!Players](https://i.imgur.com/i1iTugw.gif)
 
 ## Building and Running
 
@@ -29,14 +37,15 @@ sh scripts/build.sh
 To run, at the root of the project:
 
 ```sh
-sh scripts/run.sh
+sh scripts/run.sh server
+sh scripts/run.sh client
 ```
 
 To build and run in release mode, simply add the `release` suffix:
 
 ```sh
 sh scripts/build.sh release
-sh scripts/run.sh release
+sh scripts/run.sh release [client or server here]
 ```
 
 You can also create a deployable build (that can be sent) by doing:
