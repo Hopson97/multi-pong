@@ -14,7 +14,7 @@ struct ClientEndPoint {
 };
 
 struct ObjectState {
-    sf::FloatRect bounds;
+    sf::Vector2f position;
     float speedX = 0;
     float speedY = 0;
 };

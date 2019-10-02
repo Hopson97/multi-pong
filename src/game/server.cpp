@@ -17,17 +17,10 @@ Server::Server()
     m_socket.bind(54321);
     m_connects.fill(false);
 
-    m_ball.bounds.left = WIN_WIDTH / 2.0f;
-    m_ball.bounds.top = WIN_HEIGHT / 2.0f;
-    m_ball.bounds.width = BALL_SIZE;
-    m_ball.bounds.height = BALL_SIZE;
+    m_ball.position.x = WIN_WIDTH / 2.0f;
+    m_ball.position.y = WIN_HEIGHT / 2.0f;
     m_ball.speedX = 250;
     m_ball.speedY = 50;
-
-    for (auto &state : m_clientStates) {
-        state.bounds.width = PADDLE_WIDTH;
-        state.bounds.height = PADDLE_HEIGHT;
-    }
 }
 
 void Server::run()
@@ -93,41 +86,41 @@ void Server::updateState()
                 state.speedY = 0.0f;
             }
 
-            state.bounds.top += state.speedY * (1 / 60.0f);
+            state.position.y += state.speedY * (1 / 60.0f);
 
-            if (state.bounds.top > WIN_HEIGHT) {
-                state.bounds.top = WIN_HEIGHT - 1;
+            if (state.position.y > WIN_HEIGHT) {
+                state.position.y = WIN_HEIGHT - 1;
                 state.speedY = 0;
             }
-            else if (state.bounds.top < 0) {
-                state.bounds.top = 1;
+            else if (state.position.y < 0) {
+                state.position.y = 1;
                 state.speedY = 0;
             }
         }
     }
 
-    m_ball.bounds.left += m_ball.speedX * (1 / 60.0f);
-    m_ball.bounds.top += m_ball.speedY * (1 / 60.0f);
+    m_ball.position.x += m_ball.speedX * (1 / 60.0f);
+    m_ball.position.y += m_ball.speedY * (1 / 60.0f);
 
-    const auto &leftPlayer = m_clientStates[0].bounds;
-    const auto &rightPlayer = m_clientStates[1].bounds;
+    const auto &leftPlayer = m_clientStates[0].position;
+    const auto &rightPlayer = m_clientStates[1].position;
 
-    if (m_ball.bounds.left <= leftPlayer.left + PADDLE_WIDTH &&
-        m_ball.bounds.top >= leftPlayer.top &&
-        m_ball.bounds.top + BALL_SIZE <= leftPlayer.top + PADDLE_HEIGHT) {
+    if (m_ball.position.x <= leftPlayer.x + PADDLE_WIDTH &&
+        m_ball.position.y >= leftPlayer.y &&
+        m_ball.position.y + BALL_SIZE <= leftPlayer.y + PADDLE_HEIGHT) {
         m_ball.speedX *= -1;
     }
-    else if (m_ball.bounds.left + BALL_SIZE >= rightPlayer.left &&
-        m_ball.bounds.top >= rightPlayer.top &&
-        m_ball.bounds.top + BALL_SIZE <= rightPlayer.top + PADDLE_HEIGHT) {
-        m_ball.speedX *= -1;
-    }
-
-    if (m_ball.bounds.left + BALL_SIZE > WIN_WIDTH || m_ball.bounds.left <= 0) {
+    else if (m_ball.position.x + BALL_SIZE >= rightPlayer.x &&
+        m_ball.position.y >= rightPlayer.y &&
+        m_ball.position.y + BALL_SIZE <= rightPlayer.y + PADDLE_HEIGHT) {
         m_ball.speedX *= -1;
     }
 
-    if (m_ball.bounds.top + BALL_SIZE > WIN_HEIGHT || m_ball.bounds.top <= 0) {
+    if (m_ball.position.x + BALL_SIZE > WIN_WIDTH || m_ball.position.x <= 0) {
+        m_ball.speedX *= -1;
+    }
+
+    if (m_ball.position.y + BALL_SIZE > WIN_HEIGHT || m_ball.position.y <= 0) {
         m_ball.speedY *= -1;
     }
 }
@@ -139,13 +132,13 @@ void Server::sendState()
     for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
         if (m_connects[i]) {
             auto &client = getClientState(i);
-            packet << static_cast<Client_t>(i) << client.bounds.left
-                   << client.bounds.top;
+            packet << static_cast<Client_t>(i) << client.position.x
+                   << client.position.y;
         }
     }
     sf::Packet ballPacket;
-    ballPacket << CommandsToClient::BallPosition << m_ball.bounds.left
-               << m_ball.bounds.top;
+    ballPacket << CommandsToClient::BallPosition << m_ball.position.x
+               << m_ball.position.y;
 
     for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
         if (m_connects[i]) {
@@ -174,14 +167,14 @@ void Server::handleConnect(const sf::IpAddress &address, Port_t port)
                << static_cast<Client_t>(slot);
         sendTo(packet, static_cast<Client_t>(slot));
 
-        auto &bounds = m_clientStates[slot].bounds;
+        auto &position = m_clientStates[slot].position;
         if (slot == 0) {
-            bounds.left = 100;
-            bounds.top = 10;
+            position.x = 100;
+            position.y = 10;
         }
         else {
-            bounds.left = WIN_WIDTH - PADDLE_WIDTH - 100;
-            bounds.top = 10;
+            position.x = WIN_WIDTH - PADDLE_WIDTH - 100;
+            position.y = 10;
         }
 
         m_connects[slot] = true;
