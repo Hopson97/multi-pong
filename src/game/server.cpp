@@ -165,7 +165,7 @@ void Server::handleConnect(const sf::IpAddress &address, Port_t port)
             bounds.top = 10;
         }
         else {
-            bounds.left = WIN_HEIGHT - PADDLE_WIDTH - 10;
+            bounds.left = WIN_WIDTH - PADDLE_WIDTH - 10;
             bounds.top = 10;
         }
 
