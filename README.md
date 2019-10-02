@@ -8,7 +8,7 @@ WIP Multiplayer pong using SFML and UDP.
 
 Got 4 players able to run around a map, with the "ball" also there. All positions are calculated on the server and then broadcasted to the clients.
 
-[!Players](https://i.imgur.com/i1iTugw.gif)
+![Players](https://i.imgur.com/i1iTugw.gif)
 
 ## Building and Running
 
