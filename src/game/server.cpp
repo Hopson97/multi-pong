@@ -21,7 +21,7 @@ Server::Server()
     m_ball.bounds.top = WIN_HEIGHT / 2.0f;
     m_ball.bounds.width = BALL_SIZE;
     m_ball.bounds.height = BALL_SIZE;
-    m_ball.speedX = 200;
+    m_ball.speedX = 250;
     m_ball.speedY = 50;
 
     for (auto &state : m_clientStates) {
@@ -109,6 +109,20 @@ void Server::updateState()
     m_ball.bounds.left += m_ball.speedX * (1 / 60.0f);
     m_ball.bounds.top += m_ball.speedY * (1 / 60.0f);
 
+    const auto &leftPlayer = m_clientStates[0].bounds;
+    const auto &rightPlayer = m_clientStates[1].bounds;
+
+    if (m_ball.bounds.left <= leftPlayer.left + PADDLE_WIDTH &&
+        m_ball.bounds.top >= leftPlayer.top &&
+        m_ball.bounds.top + BALL_SIZE <= leftPlayer.top + PADDLE_HEIGHT) {
+        m_ball.speedX *= -1;
+    }
+    else if (m_ball.bounds.left + BALL_SIZE >= rightPlayer.left &&
+        m_ball.bounds.top >= rightPlayer.top &&
+        m_ball.bounds.top + BALL_SIZE <= rightPlayer.top + PADDLE_HEIGHT) {
+        m_ball.speedX *= -1;
+    }
+
     if (m_ball.bounds.left + BALL_SIZE > WIN_WIDTH || m_ball.bounds.left <= 0) {
         m_ball.speedX *= -1;
     }
@@ -116,8 +130,6 @@ void Server::updateState()
     if (m_ball.bounds.top + BALL_SIZE > WIN_HEIGHT || m_ball.bounds.top <= 0) {
         m_ball.speedY *= -1;
     }
-
-
 }
 
 void Server::sendState()
@@ -164,11 +176,11 @@ void Server::handleConnect(const sf::IpAddress &address, Port_t port)
 
         auto &bounds = m_clientStates[slot].bounds;
         if (slot == 0) {
-            bounds.left = 50;
+            bounds.left = 100;
             bounds.top = 10;
         }
         else {
-            bounds.left = WIN_WIDTH - PADDLE_WIDTH - 50;
+            bounds.left = WIN_WIDTH - PADDLE_WIDTH - 100;
             bounds.top = 10;
         }
 
