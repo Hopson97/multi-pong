@@ -1,6 +1,7 @@
 #pragma once
 
 #include "net_commands.h"
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>
 #include <array>
@@ -13,17 +14,14 @@ struct ClientEndPoint {
 };
 
 struct ObjectState {
-    sf::Vector2f position;
+    sf::FloatRect bounds;
     float speedX = 0;
     float speedY = 0;
-    float angle = 0;
 };
 
 struct ClientInput {
-    int32_t forwards = 0;
-    int32_t backwards = 0;
-    int32_t left = 0;
-    int32_t right = 0;
+    int32_t up;
+    int32_t down;
 };
 
 class Server {

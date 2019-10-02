@@ -3,6 +3,8 @@
 #include <bitset>
 #include <iostream>
 
+#include "pong.h"
+
 Client::Client()
     : m_remoteAddress(sf::IpAddress::LocalHost)
     , m_remotePort(54321)
@@ -27,11 +29,10 @@ Client::Client()
 
     for (unsigned i = 0; i < MAX_CONNECTIONS; i++) {
         m_peers[i].sprite.setFillColor(sf::Color{100, 50, 154});
-        m_peers[i].sprite.setSize({40, 20});
-        m_peers[i].sprite.setOrigin({20, 10});
+        m_peers[i].sprite.setSize({PADDLE_WIDTH, PADDLE_HEIGHT});
     }
 
-    m_ball.setSize({10, 10});
+    m_ball.setSize({BALL_SIZE, BALL_SIZE});
 }
 
 void Client::run()
@@ -49,16 +50,10 @@ void Client::run()
         // Input
         Input_t input = 0;
         if (m_keys.isKeyDown(sf::Keyboard::W))
-            input |= Input::FOWARDS;
-
-        if (m_keys.isKeyDown(sf::Keyboard::A))
-            input |= Input::LEFT;
+            input |= Input::UP;
 
         if (m_keys.isKeyDown(sf::Keyboard::S))
-            input |= Input::BACK;
-
-        if (m_keys.isKeyDown(sf::Keyboard::D))
-            input |= Input::RIGHT;
+            input |= Input::DOWN;
 
         // if (input) {
         sf::Packet clientInput;
@@ -128,12 +123,10 @@ void Client::handleStateRecieve(sf::Packet &packet)
     Client_t id;
     float x;
     float y;
-    float angle;
     while (packet >> id) {
-        packet >> x >> y >> angle;
+        packet >> x >> y;
         m_connects[id] = true;
         m_peers[id].sprite.setPosition(x, y);
-        m_peers[id].sprite.setRotation(angle);
     }
 }
 
