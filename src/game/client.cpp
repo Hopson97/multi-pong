@@ -125,7 +125,7 @@ void Client::handleStateRecieve(sf::Packet &packet)
     float y;
     while (packet >> id) {
         packet >> x >> y;
-        std::cout << x << " " << y << std::endl;
+        std::cout << x << " " << y << " " << std::endl;
         m_connects[id] = true;
         m_peers[id].sprite.setPosition(x, y);
     }

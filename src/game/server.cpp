@@ -105,7 +105,6 @@ void Server::updateState()
         }
     }
 
-    m_ball.bounds.left += m_ball.speedX * (1 / 60.0f);
     m_ball.bounds.top += m_ball.speedY * (1 / 60.0f);
 
     float BALL_SIZE = 10;
