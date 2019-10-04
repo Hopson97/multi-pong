@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../input/keyboard.h"
-#include "net_commands.h"
+#include "input/keyboard.h"
+#include <common/net_commands.h>
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 

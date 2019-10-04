@@ -1,4 +1,4 @@
-#include "net_commands.h"
+#include <common/net_commands.h>
 
 sf::Packet &operator>>(sf::Packet &packet, CommandsToServer &command)
 {

@@ -1,11 +1,11 @@
-#include "server.h"
+#include <server/server.h>
 
 #include <bitset>
 #include <cmath>
 #include <iostream>
 #include <thread>
 
-#include "pong.h"
+#include <common/pong.h>
 
 using Clock = std::chrono::high_resolution_clock;
 using Time = std::chrono::microseconds;

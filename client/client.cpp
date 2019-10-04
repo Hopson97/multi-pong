@@ -3,7 +3,7 @@
 #include <bitset>
 #include <iostream>
 
-#include "pong.h"
+#include <common/pong.h>
 
 Client::Client()
     : m_remoteAddress(sf::IpAddress::LocalHost)
