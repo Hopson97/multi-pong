@@ -7,8 +7,8 @@ add_executable(${PROJECT_NAME}
 
 setup_target_compile(${PROJECT_NAME})
 
-target_include_directories(${PROJECT_NAME}  PRIVATE ${PONG_SERVER_INCLUDE_DIR})
-target_include_directories(${PROJECT_NAME}  PRIVATE ${PONG_COMMON_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${PONG_SERVER_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${PONG_COMMON_INCLUDE_DIR})
 
 #Finally
 target_link_libraries(${PROJECT_NAME}

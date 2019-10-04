@@ -1,5 +1,4 @@
-
-set(PONG_COMMON_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(PONG_COMMON_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/common/include)
 
 add_library(pong-common 
     src/net_commands.cpp

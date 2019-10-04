@@ -1,6 +1,6 @@
 #pragma once
 
-#include "net_commands.h"
+#include <common/net_commands.h>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>
