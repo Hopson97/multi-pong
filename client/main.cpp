@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "client.h"
-#include "game/server.h"
+#include <server/server.h>
 
 void printOptions()
 {
